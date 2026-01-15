@@ -1,0 +1,41 @@
+<mujoco model="openarm_bimanual scene">
+<option timestep="0.001" iterations="100" solver="Newton" tolerance="1e-10" impratio="10">
+<flag contact="enable" energy="enable"/>
+</option>
+<include file="openarm_bimanual_cam_v2.xml"/>
+
+<option timestep="0.001" iterations="200" integrator="implicitfast" solver="Newton" tolerance="1e-10" impratio="10">
+<flag contact="enable" frictionloss="enable" energy="enable"/>
+</option>
+<statistic center="0 0 0.43" extent=".85" meansize="0.05"/>
+<visual>
+<headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+<rgba haze="0.15 0.25 0.35 1"/>
+<global azimuth="160" elevation="-10"/>
+<quality shadowsize="8192"/>
+</visual>
+<asset>
+<texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+<texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+<material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+<texture name="tex_banana" type="2d" file="meshes/011_banana/texture_map.png"/>
+<material name="mat_banana" texture="tex_banana" specular="0.5" shininess="0.5"/>
+<mesh name="mesh_banana_visual" file="011_banana/textured_simple.obj"/>
+<mesh name="mesh_banana_collision" file="011_banana/textured_simple.obj"/>
+</asset>
+<worldbody>
+<light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+<geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+<body name="table" pos="0.35 0 0.15">
+<geom name="table_top" type="box" size="0.25 0.3 0.15" rgba="0.8 0.8 0.8 1" friction="1 0.005 0.0001" contype="1" conaffinity="1" condim="3"/>
+</body>
+<body name="banana" pos="0.35 0 0.35" euler="0 0 1.57">
+<joint name="banana_joint" type="free" damping="0.1" frictionloss="0.01"/>
+<!--  1. 视觉模型：保持 contype/conaffinity 为 0，通常放在 group 1 (渲染组)  -->
+<geom type="mesh" mesh="mesh_banana_visual" material="mat_banana" contype="0" conaffinity="0" group="1"/>
+<inertial pos="0 0 0" mass="0.2" diaginertia="0.001 0.001 0.001"/>
+<geom type="capsule" size="0.02 0.06" euler="1.57 0 0" pos="0 0 0" contype="1" conaffinity="1" friction="1 0.05 0.01" group="3"/>
+
+</body>
+</worldbody>
+</mujoco>
